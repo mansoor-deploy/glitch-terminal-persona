@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronRight, Volume2, VolumeX } from 'lucide-react';
 
@@ -29,7 +28,10 @@ const Terminal: React.FC<TerminalProps> = ({ onCommandExecute, soundEnabled, set
   const playSound = () => {
     if (!soundEnabled) return;
     // Create a subtle beep sound
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    
+    const audioContext = new AudioContextClass();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     
