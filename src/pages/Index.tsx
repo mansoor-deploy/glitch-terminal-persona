@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MatrixBackground from '../components/MatrixBackground';
 import BootSequence from '../components/BootSequence';
 import Terminal from '../components/Terminal';
@@ -13,6 +13,7 @@ const Index = () => {
     timestamp: string;
   }>>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const handleCommandExecute = (command: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -30,6 +31,18 @@ const Index = () => {
 
     setCommandHistory(prev => [...prev, newEntry]);
   };
+
+  // Auto-scroll to bottom when new command is added
+  useEffect(() => {
+    if (scrollAreaRef.current && commandHistory.length > 0) {
+      setTimeout(() => {
+        scrollAreaRef.current?.scrollTo({
+          top: scrollAreaRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
+  }, [commandHistory]);
 
   const handleBootComplete = () => {
     setBootComplete(true);
@@ -82,7 +95,10 @@ const Index = () => {
                   </div>
                 )}
 
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div 
+                  ref={scrollAreaRef}
+                  className="space-y-4 max-h-96 overflow-y-auto scroll-smooth"
+                >
                   {commandHistory.map((entry, index) => (
                     <CommandOutput
                       key={index}
